@@ -21,6 +21,14 @@ class KrakenSafeWrapper {
     return resp
   }
 
+  checkIfShouldRetry(error) {
+    if (typeof error !== 'object') return false
+    if (error.statusCode === 520) return true
+    const timeoutErr = error.name === 'RequestError' && error.code === 'ETIMEDOUT'
+    if (timeoutErr) return true
+    return false
+  }
+
   async api(...args) {
     let nTries = 0
     while (nTries < this.maxTries) {
@@ -30,9 +38,9 @@ class KrakenSafeWrapper {
         return resp
       }
       catch (err) {
-        const statusCode = typeof err === 'object' ? err.statusCode : null
-        if (statusCode === 520) {
-          const msg = `kraken '${args[0]}' failed with ${err.statusCode}`
+        const shouldRetry = this.checkIfShouldRetry(err)
+        if (shouldRetry) {
+          const msg = `kraken '${args[0]}' failed with retriable error ${err}`
           info(msg)
         }
         else {
