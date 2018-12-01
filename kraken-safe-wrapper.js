@@ -37,7 +37,10 @@ class KrakenSafeWrapper {
         }
         else {
           // const msg = `kraken api call ${JSON.stringify(args)} failed with error: ${err}`
-          throw err
+          const e = new Error(`Rethrowing the "${err.message}" error`)
+          e.original = err
+          e.stack = e.stack.split('\n').slice(0,2).join('\n') + '\n' + err.stack
+          throw e
         }
       }
     }
