@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "auto-dec-counter": "^1.0.0",
     "debug": "^4.1.0",
     "kraken-api": "^1.0.0"
   }
